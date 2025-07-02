@@ -1,93 +1,89 @@
 import React, { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { useBlackHole } from "../lib/stores/useBlackHole";
+import { useFrame } from "@react-three/fiber";
+import { useBlackHole } from "@/lib/stores/useBlackHole";
+import { usePowerUps } from "@/lib/stores/usePowerUps";
+
+export interface BlackHoleState {
+  position: { x: number; y: number; z: number };
+  size: number;
+  energy: number;
+  maxEnergy: number;
+}
 
 export default function BlackHole() {
-  const { position, size } = useBlackHole();
+  const { position, size, energy, maxEnergy } = useBlackHole();
+  const { activePowerUps } = usePowerUps();
+
   const meshRef = useRef<THREE.Mesh>(null);
-  const innerRingRef = useRef<THREE.Mesh>(null);
-  const outerRingRef = useRef<THREE.Mesh>(null);
-  
-  useFrame((state) => {
-    const time = state.clock.elapsedTime;
-    
-    // Rotate the black hole
-    if (meshRef.current) {
-      meshRef.current.rotation.y = time * 2;
-      meshRef.current.rotation.x = Math.sin(time * 0.5) * 0.1;
-    }
-    
-    // Rotate rings in opposite directions
-    if (innerRingRef.current) {
-      innerRingRef.current.rotation.y = -time * 3;
-      innerRingRef.current.rotation.z = Math.sin(time) * 0.05;
-    }
-    
-    if (outerRingRef.current) {
-      outerRingRef.current.rotation.y = time * 1.5;
-      outerRingRef.current.rotation.z = Math.cos(time * 0.7) * 0.03;
-    }
+  const glowRef = useRef<THREE.Mesh>(null);
+
+  // Handle power-up effects
+  const hasSizeBoost = activePowerUps.some((p) => p.type === "size");
+  const hasShield = activePowerUps.some((p) => p.type === "shield");
+
+  const effectiveSize = hasSizeBoost ? size * 1.5 : size;
+
+  // Animation loop
+  useFrame((state, delta) => {
+    if (!meshRef.current || !glowRef.current) return;
+
+    // Update position
+    meshRef.current.position.set(position.x, position.y, position.z);
+    glowRef.current.position.set(position.x, position.y, position.z);
+
+    // Rotate black hole
+    meshRef.current.rotation.y += delta * 0.5;
+
+    // Pulse effect
+    const pulse = (Math.sin(state.clock.elapsedTime * 2) * 0.1 + 1) || 1;
+    meshRef.current.scale.set(
+      effectiveSize * pulse,
+      effectiveSize * pulse,
+      effectiveSize * pulse
+    );
+
+    // Glow size
+    glowRef.current.scale.set(
+      effectiveSize * 2.5,
+      effectiveSize * 2.5,
+      effectiveSize * 2.5
+    );
   });
 
   return (
-    <group position={[position.x, position.y, position.z]}>
-      {/* Main black hole sphere */}
-      <mesh ref={meshRef} castShadow>
-        <sphereGeometry args={[size, 16, 16]} />
+    <>
+      {/* Black hole core */}
+      <mesh ref={meshRef} position={[position.x, position.y, position.z]}>
+        <sphereGeometry args={[1, 32, 32]} />
         <meshStandardMaterial
           color="#000000"
-          emissive="#1A0B2E"
-          emissiveIntensity={0.3}
-          roughness={0.1}
-          metalness={0.9}
+          emissive="#000000"
+          metalness={1}
+          roughness={0}
         />
       </mesh>
-      
-      {/* Inner accretion ring */}
-      <mesh ref={innerRingRef} position={[0, 0.1, 0]}>
-        <ringGeometry args={[size * 1.2, size * 1.8, 32]} />
+
+      {/* Glow effect */}
+      <mesh ref={glowRef} position={[position.x, position.y, position.z]}>
+        <sphereGeometry args={[1, 32, 32]} />
         <meshStandardMaterial
-          color="#FF6B35"
-          emissive="#FF6B35"
+          color={hasShield ? "#2979ff" : "#9c27b0"}
+          emissive={hasShield ? "#2979ff" : "#9c27b0"}
           emissiveIntensity={0.5}
           transparent
-          opacity={0.6}
-          side={THREE.DoubleSide}
+          opacity={0.3}
         />
       </mesh>
-      
-      {/* Outer energy ring */}
-      <mesh ref={outerRingRef} position={[0, -0.1, 0]}>
-        <ringGeometry args={[size * 2, size * 2.5, 32]} />
-        <meshStandardMaterial
-          color="#00F5FF"
-          emissive="#00F5FF"
-          emissiveIntensity={0.3}
-          transparent
-          opacity={0.4}
-          side={THREE.DoubleSide}
-        />
+
+      {/* Energy indicator */}
+      <mesh
+        position={[position.x, position.y + effectiveSize * 2, position.z]}
+        scale={[energy / maxEnergy * 3, 0.2, 0.2]}
+      >
+        <boxGeometry />
+        <meshBasicMaterial color="#ffeb3b" />
       </mesh>
-      
-      {/* Gravitational distortion effect */}
-      <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[size * 3, 16, 16]} />
-        <meshStandardMaterial
-          color="#1A0B2E"
-          transparent
-          opacity={0.1}
-          wireframe
-        />
-      </mesh>
-      
-      {/* Point light for glow effect */}
-      <pointLight
-        color="#00F5FF"
-        intensity={size * 0.5}
-        distance={size * 10}
-        decay={2}
-      />
-    </group>
+    </>
   );
 }

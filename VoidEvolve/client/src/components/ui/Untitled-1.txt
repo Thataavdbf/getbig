@@ -1,0 +1,20 @@
+// lib/objectPool.ts
+class ObjectPool<T> {
+  private pool: T[] = [];
+  private createFn: () => T;
+  
+  constructor(createFn: () => T, initialSize = 20) {
+    this.createFn = createFn;
+    for (let i = 0; i < initialSize; i++) {
+      this.pool.push(createFn());
+    }
+  }
+  
+  get(): T {
+    return this.pool.pop() || this.createFn();
+  }
+  
+  release(obj: T) {
+    this.pool.push(obj);
+  }
+}

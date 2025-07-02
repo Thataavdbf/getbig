@@ -1,0 +1,151 @@
+ORD\getbig\getbig\VoidEvolve\client\src\types\index.ts
+import * as THREE from 'three';
+
+// Vector types
+export type Vector3Type = {
+  x: number;
+  y: number;
+  z: number;
+} | THREE.Vector3;
+
+export interface Vector3 {
+  x: number;
+  y: number;
+  z: number;
+}
+
+// Input event types
+export interface GameInputEvent {
+  clientX: number;
+  clientY: number;
+  preventDefault: () => void;
+}
+
+// Component prop types
+export interface HazardProps {
+  position: [number, number, number];
+  type: string;
+  size: number;
+  rotation: number;
+}
+
+// Environment types
+export type Environment = 
+  | 'space' 
+  | 'alien_planet' 
+  | 'cybercity' 
+  | 'ancient_ruins' 
+  | 'time_vortex';
+
+// Form field types (from react-hook-form)
+export type FieldValues = Record<string, any>;
+export type FieldPath<TFieldValues extends FieldValues> = string;
+
+export type FormFieldContextValue<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> = {
+  name: TName
+}
+
+// Game object types
+export interface ConsumableObject {
+  id: string;
+  position: Vector3;
+  size: number;
+  type: string;
+  destructible: boolean;
+  color?: string;
+  points?: number;
+}
+
+export interface EnhancedConsumableObject extends ConsumableObject {
+  value: number;
+  behavior?: 'static' | 'floating' | 'orbiting' | 'fleeing';
+  effectType?: ElementType;
+  effectStrength?: number;
+  isRare?: boolean;
+  isPowerUp?: boolean;
+  powerUpType?: PowerUpType;
+}
+
+// Element and PowerUp types
+export type ElementType = 'fire' | 'ice' | 'gravity' | 'time' | 'void';
+
+export type PowerUpType = 'speed' | 'size' | 'energy' | 'shield' | 'magnet' | 'time_slow';
+
+// Game mechanic types
+export interface ComboState {
+  count: number;
+  timer: number;
+  multiplier: number;
+  score: number;
+}
+
+export interface PowerUp {
+  id: string;
+  type: PowerUpType;
+  position: Vector3;
+  duration: number;
+  strength: number;
+  active: boolean;
+  timeRemaining?: number;
+}
+
+export interface DefenseObject {
+  id: string;
+  position: Vector3;
+  health: number;
+  maxHealth: number;
+  size: number;
+  type: string;
+}
+
+// Level system types
+export interface Level {
+  id: number;
+  name: string;
+  environment: Environment;
+  objectives: Objective[];
+  completed: boolean;
+  unlocked: boolean;
+}
+
+export interface Objective {
+  id: string;
+  description: string;
+  target: number;
+  current: number;
+  completed: boolean;
+  type: 'score' | 'consume' | 'time' | 'defend';
+}
+
+// Add new type for BlackHole
+export interface BlackHoleState {
+  position: Vector3;
+  size: number;
+  mass: number;
+  energy: number;
+  maxEnergy: number;
+  score: number;
+  consumed: number;
+  
+  setPosition: (position: Vector3) => void;
+  grow: (amount: number) => void;
+  shrink: (amount: number) => void;
+  addEnergy: (amount: number) => void;
+  useEnergy: (amount: number) => boolean;
+  addScore: (points: number) => void;
+  reset: () => void;
+}
+
+// Declare THREE JSX elements to avoid TypeScript errors
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      instancedMesh: any;
+      shaderMaterial: any;
+      blackHoleMaterial: any;
+    }
+  }
+}

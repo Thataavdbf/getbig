@@ -109,9 +109,14 @@ export function calculateAttraction(
 export function checkEnvironmentCollision(
   blackHolePos: THREE.Vector3,
   blackHoleSize: number,
-  envObject: any
+  envObject: {position: [number, number, number]} // Properly type the envObject parameter
 ): boolean {
-  const envPos = new THREE.Vector3(...envObject.position);
+  // Create a proper Vector3 from array
+  const envPos = new THREE.Vector3(
+    envObject.position[0],
+    envObject.position[1],
+    envObject.position[2]
+  );
   const distance = blackHolePos.distanceTo(envPos);
   return distance < (blackHoleSize + 2); // Environment objects are larger
 }

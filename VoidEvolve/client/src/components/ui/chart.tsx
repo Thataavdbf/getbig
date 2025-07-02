@@ -8,7 +8,20 @@ import { cn } from "@/lib/utils"
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
 
+// Add necessary imports and types
+import { type ReactNode } from "react"
+
+// Define types for chart config
 export type ChartConfig = {
+  // Add required configuration properties
+  colors?: Record<string, string>
+  series?: Array<{
+    name: string
+    color?: string
+    // Other series properties
+  }>
+  // Other config properties
+} & {
   [k in string]: {
     label?: React.ReactNode
     icon?: React.ComponentType

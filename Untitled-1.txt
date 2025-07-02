@@ -1,0 +1,3 @@
+// In Game.tsx - Objects keep accumulating
+const newObjects = generateConsumableObjects(spawnCount, currentEnvironment);
+consumableObjects.current.push(...newObjects); // Never cleaned up properly

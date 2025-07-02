@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useGame } from "../lib/stores/useGame";
@@ -14,6 +14,7 @@ import ParticleSystem from "./ParticleSystem";
 import ElementalEffects from "./ElementalEffects";
 import DestructionEffects from "./DestructionEffects";
 import EnvironmentalHazards from "./EnvironmentalHazards";
+import { ObjectPool } from "@/lib/objectPool";
 
 interface ConsumableObj {
   id: string;
@@ -22,6 +23,19 @@ interface ConsumableObj {
   type: 'cube' | 'sphere' | 'pyramid';
   color: string;
   points: number;
+}
+
+const consumablePool = new ObjectPool(() => ({
+  position: new THREE.Vector3(),
+  size: 1,
+}), 50);
+
+function spawnConsumable() {
+  const obj = consumablePool.get();
+  // Set position and size dynamically
+  obj.position.set(Math.random() * 10, Math.random() * 10, Math.random() * 10);
+  obj.size = Math.random() * 2;
+  return obj;
 }
 
 export default function Game() {
@@ -45,6 +59,7 @@ export default function Game() {
   const consumableObjects = useRef<ConsumableObj[]>([]);
   const consumedObjects = useRef<string[]>([]);
   const lastSpawnTime = useRef(0);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Initialize consumable objects
   React.useEffect(() => {
@@ -84,21 +99,19 @@ export default function Game() {
     updatePosition(event.clientX, event.clientY);
   }, [phase, updatePosition]);
 
-  React.useEffect(() => {
-    const canvas = document.querySelector('canvas');
-    if (canvas) {
-      // Add event listeners with proper types
-      canvas.addEventListener('touchmove', handleTouchMove as EventListener, { passive: false });
-      canvas.addEventListener('mousemove', handleMouseMove as EventListener);
-      canvas.addEventListener('pointermove', handlePointerMove as EventListener);
-      
-      return () => {
-        canvas.removeEventListener('touchmove', handleTouchMove as EventListener);
-        canvas.removeEventListener('mousemove', handleMouseMove as EventListener);
-        canvas.removeEventListener('pointermove', handlePointerMove as EventListener);
-      };
-    }
-  }, [handleTouchMove, handleMouseMove, handlePointerMove]);
+  // Clean up event listeners properly
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    canvas.addEventListener('mousemove', handleMouseMove as EventListener);
+    canvas.addEventListener('touchmove', handleTouchMove as EventListener);
+    
+    return () => {
+      canvas.removeEventListener('mousemove', handleMouseMove as EventListener);
+      canvas.removeEventListener('touchmove', handleTouchMove as EventListener);
+    };
+  }, [handleMouseMove, handleTouchMove]);
 
   useFrame((state, delta) => {
     if (phase !== "playing") return;

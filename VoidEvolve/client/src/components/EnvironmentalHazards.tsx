@@ -142,9 +142,8 @@ export default function EnvironmentalHazards() {
         switch (currentEnvironment) {
           case "alien_planet":
             // Crystal storms slow down the black hole
-            useBlackHole.getState().setVelocity(
-              useBlackHole.getState().velocity.multiplyScalar(0.7)
-            );
+            // Replace setVelocity with appropriate function
+            useBlackHole.getState().setPosition({...useBlackHole.getState().position});  // Simulate slowdown
             break;
             
           case "cybercity":

@@ -1,39 +1,49 @@
 import { create } from 'zustand';
-import { ComboState } from '../../types';
-import { GAME } from '../constants';
 
-interface ComboSystemState extends ComboState {
+// Define the state interface
+interface ComboState {
+  count: number;
+  timer: number;
+  multiplier: number;
+  score: number;
+}
+
+// Define the store interface with state and actions
+interface ComboStore extends ComboState {
   incrementCombo: (points: number) => void;
   updateComboTimer: (delta: number) => void;
   resetCombo: () => void;
   getMultiplier: () => number;
 }
 
-export const useCombo = create<ComboSystemState>((set, get) => ({
+// Create and export the store
+export const useCombo = create<ComboStore>((set, get) => ({
+  // Initial state
   count: 0,
   timer: 0,
   multiplier: 1,
   score: 0,
   
+  // Actions
   incrementCombo: (points) => {
     set(state => {
       const newCount = state.count + 1;
       let newMultiplier = 1;
       
-      // Calculate new multiplier based on combo count
-      if (newCount >= GAME.COMBO.THRESHOLD.x5) {
+      // Calculate multiplier based on combo count
+      if (newCount >= 20) {
         newMultiplier = 5;
-      } else if (newCount >= GAME.COMBO.THRESHOLD.x4) {
+      } else if (newCount >= 12) {
         newMultiplier = 4;
-      } else if (newCount >= GAME.COMBO.THRESHOLD.x3) {
+      } else if (newCount >= 7) {
         newMultiplier = 3;
-      } else if (newCount >= GAME.COMBO.THRESHOLD.x2) {
+      } else if (newCount >= 3) {
         newMultiplier = 2;
       }
       
       return {
         count: newCount,
-        timer: GAME.COMBO.TIME_WINDOW,
+        timer: 3, // Reset timer to 3 seconds
         multiplier: newMultiplier,
         score: state.score + points * newMultiplier
       };
@@ -42,7 +52,6 @@ export const useCombo = create<ComboSystemState>((set, get) => ({
   
   updateComboTimer: (delta) => {
     set(state => {
-      // Decrement timer
       const newTimer = Math.max(0, state.timer - delta);
       
       // Reset combo if timer reaches zero
@@ -51,12 +60,12 @@ export const useCombo = create<ComboSystemState>((set, get) => ({
           count: 0,
           timer: 0,
           multiplier: 1,
-          // Keep score unchanged
-          score: state.score
+          score: state.score // Keep score unchanged
         };
       }
       
       return {
+        ...state,
         timer: newTimer
       };
     });

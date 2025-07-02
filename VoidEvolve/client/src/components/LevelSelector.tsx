@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLevels } from '@/lib/stores/useLevels';
-import { useEnvironment } from '@/lib/stores/useEnvironment';
+import { useEnvironment, Environment } from '@/lib/stores/useEnvironment';
 import { motion } from 'framer-motion';
 
 export default function LevelSelector() {
@@ -18,7 +18,7 @@ export default function LevelSelector() {
     const level = levels.find(l => l.id === levelId);
     if (level && level.unlocked) {
       setCurrentLevel(levelId);
-      setEnvironment(level.environment);
+      setEnvironment(level.environment as Environment);
     }
   };
   

@@ -1,6 +1,23 @@
 import { create } from 'zustand';
-import { Level, Objective, Environment } from '@/types';
 import { nanoid } from 'nanoid';
+
+export interface Objective {
+  id: string;
+  description: string;
+  target: number;
+  current: number;
+  completed: boolean;
+  type: string;
+}
+
+export interface Level {
+  id: number;
+  name: string;
+  environment: string;
+  objectives: Objective[];
+  completed: boolean;
+  unlocked: boolean;
+}
 
 interface LevelState {
   levels: Level[];

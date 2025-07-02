@@ -1,5 +1,5 @@
 import React from "react";
-import { useElements, ElementType } from "../lib/stores/useElements";
+import { useElements, ElementType } from "../lib/stores/useElements.tsx";
 import { useGame } from "../lib/stores/useGame";
 
 export default function ElementSelector() {

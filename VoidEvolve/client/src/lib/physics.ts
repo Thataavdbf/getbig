@@ -19,42 +19,47 @@ export function generateConsumableObjects(count: number, environment: string = "
   // Base type for all environment configs
   type ObjectType = 'cube' | 'sphere' | 'pyramid';
   
-  // Environment-specific configurations
+  // Environment-specific configurations with material properties
   const getEnvironmentConfig = (env: string) => {
     switch (env) {
       case 'alien_planet':
         return {
           types: ['sphere', 'pyramid'] as ObjectType[],
           colors: ['#FF6B35', '#8B00FF', '#00FF7F'],
-          sizeRange: [0.8, 2.5],
+          materials: ['organic', 'crystal', 'bio'],
+          sizeRange: [9.0, 24.0], // 2x smaller: was 18.0-48.0, now 9.0-24.0
           heightRange: [0.5, 4]
         };
       case 'cybercity':
         return {
           types: ['cube', 'pyramid'] as ObjectType[],
           colors: ['#3742FA', '#FF4757', '#00F5FF'],
-          sizeRange: [0.6, 1.8],
+          materials: ['metal', 'neon', 'digital'],
+          sizeRange: [7.5, 18.0], // 2x smaller: was 15.0-36.0, now 7.5-18.0
           heightRange: [2, 8]
         };
       case 'ancient_ruins':
         return {
           types: ['cube', 'sphere'] as ObjectType[],
           colors: ['#8B4513', '#CD853F', '#A0522D'],
-          sizeRange: [0.7, 2.2],
+          materials: ['stone', 'marble', 'ancient'],
+          sizeRange: [8.4, 21.0], // 2x smaller: was 16.8-42.0, now 8.4-21.0
           heightRange: [0.5, 2]
         };
       case 'time_vortex':
         return {
           types: ['sphere', 'pyramid'] as ObjectType[],
           colors: ['#5F27CD', '#9B59B6', '#E74C3C'],
-          sizeRange: [0.4, 1.5],
+          materials: ['energy', 'plasma', 'temporal'],
+          sizeRange: [6.0, 15.0], // 2x smaller: was 12.0-30.0, now 6.0-15.0
           heightRange: [0.5, 15]
         };
       default: // space
         return {
           types: ['cube', 'sphere', 'pyramid'] as ObjectType[],
           colors: ['#FF6B35', '#00F5FF', '#5F27CD', '#FF4757'],
-          sizeRange: [0.5, 2.0],
+          materials: ['metal', 'crystal', 'alloy'],
+          sizeRange: [6.0, 18.0], // 2x smaller: was 12.0-36.0, now 6.0-18.0
           heightRange: [0.5, 3]
         };
     }
@@ -64,7 +69,7 @@ export function generateConsumableObjects(count: number, environment: string = "
   
   for (let i = 0; i < count; i++) {
     const angle = Math.random() * Math.PI * 2;
-    const radius = 10 + Math.random() * 30;
+    const radius = 37.5 + Math.random() * 225; // 50% farther: was 25-175, now 37.5-262.5
     const x = Math.cos(angle) * radius;
     const z = Math.sin(angle) * radius;
     const y = config.heightRange[0] + Math.random() * (config.heightRange[1] - config.heightRange[0]);
@@ -72,14 +77,19 @@ export function generateConsumableObjects(count: number, environment: string = "
     const size = config.sizeRange[0] + Math.random() * (config.sizeRange[1] - config.sizeRange[0]);
     const type = config.types[Math.floor(Math.random() * config.types.length)];
     const color = config.colors[Math.floor(Math.random() * config.colors.length)];
+    const material = config.materials[Math.floor(Math.random() * config.materials.length)];
     
     objects.push({
       id: `obj-${Date.now()}-${i}`,
       position: new THREE.Vector3(x, y, z),
       size,
+      originalSize: size, // Store original size for shrinking mechanic
       type,
       color,
-      points: Math.floor(size * 10)
+      material, // Add material property for enhanced visuals
+      points: Math.floor(size * 10),
+      timeNearBlackHole: 0, // Initialize proximity timer
+      hasExploded: false // Initialize explosion flag
     });
   }
   

@@ -1,5 +1,5 @@
 import React from "react";
-import { useEnvironment, EnvironmentType } from "../lib/stores/useEnvironment";
+import { useEnvironment, EnvironmentType } from "../lib/stores/useEnvironment.tsx";
 import { useGame } from "../lib/stores/useGame";
 
 export default function EnvironmentSelector() {

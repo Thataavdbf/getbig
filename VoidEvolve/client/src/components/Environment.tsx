@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { Stars, Cloud, Sky } from "@react-three/drei";
-import { useEnvironment } from "@/lib/stores/useEnvironment";
+import { useEnvironment } from "../lib/stores/useEnvironment.tsx";
 
 const DynamicLighting = () => {
   const light = useRef<THREE.PointLight>(null!);
@@ -20,11 +20,11 @@ const DynamicLighting = () => {
 
 // Add default values for ambientLightIntensity if it's not in the store
 export default function Environment() {
-  const { 
-    currentEnvironment, 
-    fogDensity = 0.02, 
-    ambientLightIntensity = 0.3 
-  } = useEnvironment();
+  const { currentEnvironment } = useEnvironment();
+  
+  // Use default values for these properties
+  const fogDensity = 0.02;
+  const ambientLightIntensity = 0.3;
   
   const groupRef = useRef<THREE.Group>(null);
 

@@ -1,8 +1,8 @@
 import React from "react";
 import { useGame } from "../lib/stores/useGame";
-import { useBlackHole } from "../lib/stores/useBlackHole";
-import { useElements } from "../lib/stores/useElements";
-import { useEnvironment } from "../lib/stores/useEnvironment";
+import { useBlackHole } from "../lib/stores/useBlackHole.tsx";
+import { useElements } from "../lib/stores/useElements.tsx";
+import { useEnvironment } from "../lib/stores/useEnvironment.tsx";
 
 export default function GameUI() {
   const { phase } = useGame();

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useElements } from "@/lib/stores/useElements";
+import { useElements } from "../lib/stores/useElements.tsx";
 import * as THREE from "three";
 
 const ElementalEffects = () => {
-  const { activeElement, elementPower } = useElements();
+  const { currentElement, elementEnergy } = useElements();
   const particlesRef = useRef<THREE.Points>(null!);
   
   // Track state changes safely
@@ -17,10 +17,10 @@ const ElementalEffects = () => {
   
   // Memoize particle generation
   const generateParticles = useCallback(() => {
-    if (!activeElement) return [];
+    if (!currentElement || currentElement === "none") return [];
     
     const newParticles = [];
-    const count = Math.floor(10 + elementPower * 20);
+    const count = Math.floor(10 + elementEnergy * 0.2);
     
     for (let i = 0; i < count; i++) {
       newParticles.push({
@@ -36,16 +36,16 @@ const ElementalEffects = () => {
     }
     
     return newParticles;
-  }, [activeElement, elementPower]);
+  }, [currentElement, elementEnergy]);
   
   // Update particles when element changes
   useEffect(() => {
-    if (activeElement) {
+    if (currentElement && currentElement !== "none") {
       setParticles(generateParticles());
     } else {
       setParticles([]);
     }
-  }, [activeElement, generateParticles]);
+  }, [currentElement, generateParticles]);
   
   // Update particle positions safely
   useFrame((state, delta) => {

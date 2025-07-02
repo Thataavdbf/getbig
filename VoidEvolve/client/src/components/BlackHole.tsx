@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import { useBlackHole } from "@/lib/stores/useBlackHole";
-import { usePowerUps } from "@/lib/stores/usePowerUps";
+import { useBlackHole } from "../lib/stores/useBlackHole.tsx";
+import { usePowerUps } from "../lib/stores/usePowerUps";
 
 export interface BlackHoleState {
   position: { x: number; y: number; z: number };
@@ -12,7 +12,7 @@ export interface BlackHoleState {
 }
 
 export default function BlackHole() {
-  const { position, size, energy, maxEnergy } = useBlackHole();
+  const { position, size } = useBlackHole();
   const { activePowerUps } = usePowerUps();
 
   const meshRef = useRef<THREE.Mesh>(null);
@@ -79,7 +79,7 @@ export default function BlackHole() {
       {/* Energy indicator */}
       <mesh
         position={[position.x, position.y + effectiveSize * 2, position.z]}
-        scale={[energy / maxEnergy * 3, 0.2, 0.2]}
+        scale={[size * 0.5, 0.2, 0.2]}
       >
         <boxGeometry />
         <meshBasicMaterial color="#ffeb3b" />

@@ -1,7 +1,7 @@
 import React, { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { useEnvironment } from "../lib/stores/useEnvironment";
+import { useEnvironment } from "../lib/stores/useEnvironment.tsx";
 
 interface DestructionParticle {
   position: THREE.Vector3;
@@ -13,7 +13,7 @@ interface DestructionParticle {
 }
 
 export default function DestructionEffects() {
-  const { destructionCount, currentEnvironment } = useEnvironment();
+  const { currentEnvironment, destructionCount } = useEnvironment();
   const particlesRef = useRef<THREE.Points>(null);
   const particles = useRef<DestructionParticle[]>([]);
   const lastDestructionCount = useRef(0);

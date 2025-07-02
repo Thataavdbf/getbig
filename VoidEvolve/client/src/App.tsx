@@ -6,6 +6,8 @@ import Game from "./components/Game";
 import GameUI from "./components/GameUI";
 import ElementSelector from "./components/ElementSelector";
 import EnvironmentSelector from "./components/EnvironmentSelector";
+import AudioManager from "./components/AudioManager";
+import GameFeaturesSummary from "./components/GameFeaturesSummary";
 import "@fontsource/inter";
 
 function App() {
@@ -88,6 +90,11 @@ function App() {
       <GameUI />
       <ElementSelector />
       <EnvironmentSelector />
+      
+      {/* Enhanced features summary */}
+      {phase === "playing" && <GameFeaturesSummary />}
+      
+      <AudioManager />
       
       {/* Audio toggle button */}
       <button
